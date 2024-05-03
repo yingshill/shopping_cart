@@ -1,0 +1,74 @@
+body {
+ font-family: Arial, sans-serif;
+}
+
+/* Flexbox layout for inventory and shopping cart sections */
+#app {
+ display: flex;
+ flex-direction: row;
+ justify-content: space-between;
+ margin: auto;
+ width: 50%;
+ padding: 10px;
+}
+
+.container {
+ display: flex;
+ flex-direction: column;
+ justify-content: space-around;
+ align-items: center;
+ margin-top: 20px;
+}
+
+/* Styling for the inventory and shopping cart boxes */
+.box {
+ border: 1px solid #ccc;
+ padding: 20px;
+ width: 80%;
+ box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Common style for both inventory and cart items */
+.item {
+ display: flex;
+ align-items: center;
+ margin-bottom: 10px;
+}
+
+.item button {
+ margin: 0 5px;
+}
+
+/* Input styling for quantity input */
+input[type="text"] {
+ width: 30px;
+ text-align: center;
+ margin: 0 5px;
+}
+
+/* Button styling */
+button {
+ background-color: #f0f0f0;
+ border: none;
+ padding: 5px 10px;
+ cursor: pointer;
+ transition: background-color 0.3s;
+}
+
+button:hover {
+ background-color: #ddd;
+}
+
+/* Specific styling for add to cart and checkout buttons */
+.add-to-cart,
+.checkout {
+ background-color: black;
+ color: white;
+ padding: 10px 20px;
+ text-transform: uppercase;
+}
+
+.checkout {
+ width: 100%;
+ margin-top: 20px;
+}
