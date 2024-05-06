@@ -147,6 +147,11 @@ const View = (() => {
     cartContainer.innerHTML += `<button onclick="handleCheckout()">Checkout</button>`;
   }
 
+  // Function to display errors
+  const displayError = (message) => {
+    console.error(message);
+  }
+  
   return {
     renderInventory,
     renderCart,
@@ -164,7 +169,7 @@ const Controller = ((model, view) => {
     view.renderCart(state.cart, handleDeleteFromCart, handleCheckout);
   });
 
-  // Initiate the application state with async 
+  // Initiate the application state
   const init = async () => {
     try {
       const [inventory, cart] = await Promise.all([model.getInventory(), model.getCart()]);
