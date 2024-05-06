@@ -4,14 +4,20 @@ const API = (() => {
     // Get cart data
     return fetch(`${URL}/cart`)
     .then(res => res.json())
-    .catch(error => console.log('Error fetching cart:', error));
+    .catch(error => {
+            console.log('Error fetching cart:', error);
+            throw new Error('Network response was not ok');
+    });
   };
 
   const getInventory = () => {
     // Get inventory data
     return fetch(`${URL}/inventory`)
     .then(res => res.json())
-    .catch(error => console.log('Error fetching inventory:', error));
+    .catch(error => {
+            console.log('Error fetching inventory:', error);
+            throw new Error('Network response was not okay');
+    });
 
   };
 
@@ -152,21 +158,21 @@ const Controller = ((model, view) => {
   // to the cart, updating quantities, deleting items, and checking out, etc.
   const state = new model.State();
 
-  const init = () => {
-    model.getInventory().then(data => {
-        state.inventory = data;
-        view.renderInventory(data, handleAddToCart, handleUpdateAmount);
-    })
+  // Subscribe to state changes to update the view
+  state.subscribe(() => {
+    view.renderInventory(state.inventory, handleAddToCart, handleUpdateAmount);
+    view.renderCart(state.cart, handleDeleteFromCart, handleCheckout);
+  });
 
-    model.getCart().then(data => {
-        state.cart = data;
-        view.renderCart(data, handleDeleteFromCart, handleCheckout);
-      });
-  
-    state.subscribe(() => {
-        view.renderInventory(state.inventory, handleAddToCart, handleUpdateAmount);
-        view.renderCart(state.cart, handleDeleteFromCart, handleCheckout);
-    });
+  // Initiate the application state
+  const init = async () => {
+    try {
+      const [inventory, cart] = await Promise.all([model.getInventory(), model.getCart()]);
+      state.inventory = inventory;
+      state.cart = cart;
+    } catch (error) {
+      view.displayError('Failed to initialize data: ' + error.message);
+    }
   };
 
   const handleUpdateAmount = (id, delta) => {
