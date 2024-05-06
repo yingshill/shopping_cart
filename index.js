@@ -164,7 +164,7 @@ const Controller = ((model, view) => {
     view.renderCart(state.cart, handleDeleteFromCart, handleCheckout);
   });
 
-  // Initiate the application state
+  // Initiate the application state with async 
   const init = async () => {
     try {
       const [inventory, cart] = await Promise.all([model.getInventory(), model.getCart()]);
