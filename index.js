@@ -1,4 +1,4 @@
-const API = (() => {
+ const API = (() => {
   const URL = "http://localhost:3000";
   const getCart = () => {
     // Get cart data
@@ -127,12 +127,21 @@ const View = (() => {
     inventoryContainer.innerHTML = inventory.map(item => `
       <div class="item">
         <span>${item.content}</span>
-        <button onclick="handleUpdateAmount('${item.id}', -1)">-</button>
+        <button id="decrease-${item.id}">-</button>
         <input type="text" value="${item.amount || 0}" readonly>
-        <button onclick="handleUpdateAmount('${item.id}', 1)">+</button>
-        <button onclick="handleAddToCart('${item.id}', ${item.amount || 0})">Add to Cart</button>
+        <button id="increase-${item.id}">+</button>
+        <button id="add-${item.id}">Add to Cart</button>
       </div>
     `).join('');
+
+    // Attach event listeners
+    // Directly embedding handlers can lead to vulnerabilities similar to XXS
+    // if the data is not properly sanitized, and it's easier to maintain
+    inventory.forEach(item => {
+        document.getElementById(`decrease-${item.id}`).addEventListener('click', () => handleUpdateAmount(item.id, -1));
+        document.getElementById(`increase-${item.id}`).addEventListener('click', () => handleUpdateAmount(item.id, 1));
+        document.getElementById(`add-${item.id}`).addEventListener('click', () => handleAddToCart(item.id, item.amount || 0));
+    })
   }
 
   // Render "Cart" list
@@ -141,17 +150,22 @@ const View = (() => {
     cartContainer.innerHTML = cart.map(item => `
       <div class="item">
         <span>${item.content} x ${item.amount}</span>
-        <button onclick="handleDeleteFromCart('${item.id}')">Delete</button>
+        <button id="delete-${item.id}">Delete</button>
       </div>
     `).join('');
-    cartContainer.innerHTML += `<button onclick="handleCheckout()">Checkout</button>`;
+    cartContainer.innerHTML += `<button id="checkout-btn">Checkout</button>`;
+
+    cart.forEach(item => {
+        document.getElementById(`delete-${item.id}`).addEventListener('click', () => handleDeleteFromCart(item.id));
+    });
+    document.getElementById('checkout-btn').addEventListener('click', handleCheckout);
   }
 
   // Function to display errors
   const displayError = (message) => {
     console.error(message);
   }
-  
+
   return {
     renderInventory,
     renderCart,
