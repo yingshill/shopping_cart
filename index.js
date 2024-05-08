@@ -47,20 +47,9 @@ const API = (() => {
   };
 
   const checkout = () => {
-    const options = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-    };
-    return fetchWithErrorHandling(`${URL}/checkout`, options)
-        .then(() => {
-            console.log('Checkout successful');
-        })
-        .catch(error => {
-            console.error('Checkout failed:', error);
-            throw new Error('Checkout process failed')
-        });
+    return getCart().then((data) =>
+      Promise.all(data.map((item) => deleteFromCart(item.id)))
+    );
   };
 
   return {
@@ -210,24 +199,24 @@ const Controller = ((model, view) => {
   };
 
   const handleAddToCart = (id, amount) => {
-    const item = state.cart.find(item => item.id === id);
-    if (item) {
-        item.amount += amount;
-    } else {
-        const product = state.inventory.find(item => item.id === id);
-        if (product && amount > 0) {
-            state.cart = [...state.cart, {...product, amount}];
-        }
+    const itemInInventory = state.inventory.find(item => item.id === id);
+    if (itemInInventory && amount > 0) {
+        // Ensure the 'content' and other necessary properties are included
+        const itemToAdd = { ...itemInInventory, amount };
+        model.addToCart(itemToAdd).then(() => {
+            model.getCart().then(updatedCart => {
+                state.cart = updatedCart; // Make sure state.cart is updated
+            });
+        });
     }
-    model.addToCart({id, amount}).then(() => {
-        model.getCart().then(data => state.cart = data);
-      });
   };
 
   const handleDeleteFromCart = (id) => {
     state.cart = state.cart.filter(item => item.id !== id);
     model.deleteFromCart(id).then(() => {
-      model.getCart().then(data => state.cart = data);
+      model.getCart().then(data => {
+        state.cart = data;
+      });
     });
   };
 
