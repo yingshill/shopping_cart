@@ -60,15 +60,28 @@ button:hover {
 }
 
 /* Specific styling for add to cart and checkout buttons */
-.add-to-cart,
-.checkout {
- background-color: black;
+#checkout-btn {
+ font-size: 18px;
+ font-weight: bold;
+ background-color: #4caf50;
  color: white;
- padding: 10px 20px;
- text-transform: uppercase;
+ padding: 12px 24px;
+ border: none;
+ border-radius: 5px;
+ cursor: pointer;
+ transition: background-color 0.3s, box-shadow 0.3s;
 }
 
-.checkout {
- width: 100%;
- margin-top: 20px;
+#checkout-btn:hover {
+ background-color: #45a049; /* slightly darker green on hover */
+ box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* shadow for 3D effect */
+}
+
+#checkout-btn:active {
+ background-color: #3e8e41; /* even darker green when pressed */
+ box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* smaller shadow when pressed */
+}
+
+.hidden {
+ display: none;
 }
