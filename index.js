@@ -1,60 +1,66 @@
- const API = (() => {
+const API = (() => {
   const URL = "http://localhost:3000";
-  const getCart = () => {
-    // Get cart data
-    return fetch(`${URL}/cart`)
-    .then(res => res.json())
-    .catch(error => {
-            console.log('Error fetching cart:', error);
-            throw new Error('Network response was not ok');
-    });
+
+  const fetchWithErrorHandling = async (url, options) => {
+    try {
+        const response = await fetch(url, options);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();    
+    } catch (error) {
+        console.error('Fetch error:', error);
+        throw error; // rethrow to handle it in the calling context
+    }
   };
 
-  const getInventory = () => {
-    // Get inventory data
-    return fetch(`${URL}/inventory`)
-    .then(res => res.json())
-    .catch(error => {
-            console.log('Error fetching inventory:', error);
-            throw new Error('Network response was not okay');
-    });
-
-  };
+  const getCart = () => fetchWithErrorHandling(`${URL}/cart`);
+  const getInventory = () => fetchWithErrorHandling(`${URL}/inventory`);
 
   const addToCart = (inventoryItem) => {
     // Add an item to cart
-    return fetch(`${URL}/cart`, {
+    return fetchWithErrorHandling(`${URL}/cart`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(inventoryItem),
-    }).then(res => res.json())
+    });
   };
 
   const updateCart = (id, newAmount) => {
     // Update an item in cart
-    return fetch(`${URL}/cart/${id}`, {
+    return fetchWithErrorHandling(`${URL}/cart/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ amount: newAmount }),
-      }).then(res => res.json());
+      });
   };
 
   const deleteFromCart = (id) => {
     // Delete an item in cart
-    return fetch(`${URL}/cart/${id}`, {
+    return fetchWithErrorHandling(`${URL}/cart/${id}`, {
         method: 'DELETE',
-      }).then(res => res.json());
+      });
   };
 
   const checkout = () => {
-    // you don't need to add anything here
-    return getCart().then((data) =>
-      Promise.all(data.map((item) => deleteFromCart(item.id)))
-    );
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    };
+    return fetchWithErrorHandling(`${URL}/checkout`, options)
+        .then(() => {
+            console.log('Checkout successful');
+        })
+        .catch(error => {
+            console.error('Checkout failed:', error);
+            throw new Error('Checkout process failed')
+        });
   };
 
   return {
